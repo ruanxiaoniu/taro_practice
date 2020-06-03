@@ -1,54 +1,22 @@
-import Taro, { useState, useEffect, useDidShow } from '@tarojs/taro'
-import { View, Button, Input } from '@tarojs/components'
+import Taro, { useState, useEffect } from '@tarojs/taro'
+import { View, Button, Input, Text, Image } from '@tarojs/components'
 import './login.scss'
 import { setToken } from '../storage/index'
+import weixin from '../../static/images/weixin.png'
 // eslint-disable-next-line import/first
 import { AtMessage } from 'taro-ui'
 
 function Login(props) {
   useEffect(() => {
     console.log('userEffect');
-    // Taro.getSetting({
-    //   success: function(authSetting) {
-    //     console.log(authSetting.authSetting['scope.userInfo']);
-    //     if(authSetting.authSetting['scope.userInfo']) {
-    //       Taro.navigateTo({
-    //         url: '../index/index'
-    //       })
-    //     }else{
-    //       Taro.atMessage({
-    //         'message': '请登录',
-    //         'type': 'error'
-    //       })
-    //     }
-    //   }
-    // })
-  })
-  useDidShow(() => {
-    console.log('show');
-     Taro.getSetting({
-      success: function(authSetting) {
-        console.log(authSetting.authSetting['scope.userInfo']);
-        if(authSetting.authSetting['scope.userInfo']) {
-          Taro.navigateTo({
-            url: '../index/index'
-          })
-        }else{
-          Taro.atMessage({
-            'message': '请登录',
-            'type': 'error'
-          })
-        }
-      }
+    Taro.showShareMenu({
+      withShareTicket: true
     })
   })
   const [User, setUser] = useState({username: '', password: ''})
   const ClickLogin = function() {
     console.log('user');
     console.log(User); 
-    Taro.getSetting({
-      success: function(authen) {
-        console.log('authen :>> ', authen);
         Taro.login({
           success: function(res) {
             Taro.login({
@@ -68,9 +36,39 @@ function Login(props) {
             
           }
         })
-      }
+  }  
+  const ClickWeixin = function() {
+    console.log('weixin');
+    // 判断微信是否已授权，授权则直接进入首页，否则先让用户授权
+    Taro.getSetting({
+      success: function(res) {
+        if(res.authSetting['scope.record']){
+          console.log('authen :>> ', res.authSetting['scope.record']);
+          Taro.navigateTo({
+            url: '../index/index'
+          })
+        }else{
+          console.log('hahha');
+          Taro.authorize({
+            scope: 'scope.record',
+            success: function(result) {
+              console.log('result');
+              console.log(result);
+              
+              Taro.startRecord()
+            },
+            fail: function(err) {
+              console.log('err');
+              console.log(err);
+              
+            }
+          })
+        }
+      },
+     
+
     })
-  
+    
   }
   return (
     <View className='login'>
@@ -83,6 +81,10 @@ function Login(props) {
         <Input className='password' placeholder='请输入密码' password value={User.password} onInput={(e) => {setUser({...User, password: e.target.value})}}></Input>
       </View>
       <Button className='button' onClick={ClickLogin}>登录</Button>
+      <Text>使用其他方式登录</Text>
+      <view>
+        <Image className='image_weixin' src={weixin} onClick={ClickWeixin} />
+      </view>
     </View>
     )
 }
