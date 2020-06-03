@@ -32,9 +32,9 @@ class App extends Component {
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
+      navigationBarBackgroundColor: '#00DDDD',
       navigationBarTitleText: 'taro_practice',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'white',
     }
   }
 
